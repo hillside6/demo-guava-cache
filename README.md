@@ -191,6 +191,22 @@ Thread-2 01:21:21 value:3750
 这种情况适合与设置一个加载缓冲区的情况,既能保证过期后加载数据,又能保证长时间没访问多个线程并发时获取到过期旧数据的情况.
 
 
+## 三、注意点
+由于google guava cache对于value=null的处理是抛出异常,使用缓存的时候如果存在旧值时会返回旧值，不能清除缓存。
+
+推荐使用Java 8 Optional 将value包装一层，出现null的时候使用invalidate及时清理缓存
+
+```
+Optional<String> optional = cache.get(key);
+if (optional.isPresent()) {
+    return optional.get();
+} else {
+    cache.invalidate(key);
+    return null;
+}
+```
+
+
 
 
 
